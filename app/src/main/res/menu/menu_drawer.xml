@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/grp_1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/all"
+            android:checkable="true"
+            android:checked="true"
+            android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="All" />
+        <item
+            android:id="@+id/day"
+            android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="Day" />
+        <item
+            android:id="@+id/week"
+            android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="Week" />
+        <item
+            android:id="@+id/month"
+            android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="Month" />
+        <item
+            android:id="@+id/year"
+            android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="Year" />
+       <!--<item
+            android:id="@+id/choosedate"
+           android:icon="@drawable/ccp_ic_arrow_drop_down"
+            android:title="Choose Date" />-->
+    </group>
+
+</menu>

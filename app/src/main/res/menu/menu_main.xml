@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/backup"
+        android:title="Backup Data"
+        tools:ignore="AppCompatResource" />
+    <item
+        android:id="@+id/restore"
+        android:title="Restore Data" />
+    <item
+        android:id="@+id/delete"
+        android:title="Delete Data" />
+    <item
+        android:id="@+id/pdf"
+        android:title="Create PDF" />
+</menu>
+
