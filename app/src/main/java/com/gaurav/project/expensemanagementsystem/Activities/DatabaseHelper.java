@@ -358,13 +358,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
-    public Cursor getHomeChooseDateData(String choosedate) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='HOME' AND date='"+choosedate+"' ORDER BY  date";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
-
     public Cursor getEntertainmentData() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='ENTERTAINMENT' ORDER BY  id" ;
@@ -410,12 +403,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return c;
     }
 
-    public Cursor gettTravellingChooseDateData(String choosedate) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='TRAVELLING' AND date='"+choosedate+"' ORDER BY  date";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
     public Cursor getcClothData() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='CLOTH' ORDER BY  id" ;

@@ -25,6 +25,7 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -273,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, getString(applicationNameId));
                 String text = "Install this cool application: ";
-                String link = "https://github.com/gaurav2398/ExpenseManagementSystems/tree/master/apkfile";
+                String link = "https://github.com/";
                 i.putExtra(Intent.EXTRA_TEXT, text + " " + link);
                 startActivity(Intent.createChooser(i, "Share link:"));
             }
