@@ -1,7 +1,12 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.text.InputType;
 import android.widget.ArrayAdapter;
@@ -18,9 +23,10 @@ public class LocalBackup {
 
     public LocalBackup(MainActivity activity) {
         this.activity = activity;
+        ;
     }
 
-    //ask to the user a name for the backup and perform it. The backup will be saved to a custom folder.
+
     public void performBackup(final DatabaseHelper db, final String outFileName) {
 
         Permissions.verifyStoragePermissions(activity);
@@ -39,7 +45,7 @@ public class LocalBackup {
             builder.setView(input);
             builder.setPositiveButton("Save", (dialog, which) -> {
                 String m_Text = input.getText().toString();
-                String out = outFileName + m_Text + ".db";
+                String out = outFileName + m_Text;
                 db.backup(out);
             });
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -49,7 +55,6 @@ public class LocalBackup {
             Toast.makeText(activity, "Unable to create directory. Retry", Toast.LENGTH_SHORT).show();
     }
 
-    //ask to the user what backup to restore
     public void performRestore(final DatabaseHelper db) {
 
         Permissions.verifyStoragePermissions(activity);
@@ -64,7 +69,7 @@ public class LocalBackup {
                 arrayAdapter.add(file.getName());
 
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(activity);
-            builderSingle.setTitle("Restore:");
+            builderSingle.setTitle("Restore Data");
             builderSingle.setNegativeButton(
                     "cancel",
                     (dialog, which) -> dialog.dismiss());
@@ -72,7 +77,15 @@ public class LocalBackup {
                     arrayAdapter,
                     (dialog, which) -> {
                         try {
+
                             db.importDB(files[which].getPath());
+                            Intent mStartActivity = new Intent(activity, MainActivity.class);
+                            int mPendingIntentId = 123456;
+                            PendingIntent mPendingIntent = PendingIntent.getActivity(activity, mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                            AlarmManager mgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 10, mPendingIntent);
+                            System.exit(0);
+                            Toast.makeText(activity, "Data Restore Successfully", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
                             Toast.makeText(activity, "Unable to restore. Retry", Toast.LENGTH_SHORT).show();
                         }
@@ -81,5 +94,6 @@ public class LocalBackup {
         } else
             Toast.makeText(activity, "Backup folder not present.\nDo a backup before a restore!", Toast.LENGTH_SHORT).show();
     }
+
 
 }

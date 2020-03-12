@@ -1,16 +1,29 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
+import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -22,9 +35,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_3 = "money";
     public static final String COL_4 = "date";
 
-    private Context mContext;
+    private Activity mContext;
 
-    public DatabaseHelper(@Nullable Context context) {
+    public DatabaseHelper(@Nullable Activity context) {
         super(context, DATABASE_NAME, null, 1);
         SQLiteDatabase db = this.getWritableDatabase();
         mContext = context;
@@ -290,18 +303,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_3,"200");
         contentValues.put(COL_4,"09-March-2000");
         db.insert(TABLE_NAME,null,contentValues);
-
-        return result;
-    }
-    public long inertData2()
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2,"HOME");
-        contentValues.put(COL_3,"500");
-        contentValues.put(COL_4,"02-March-2020");
-        long result = db.insert(TABLE_NAME,null,contentValues);
-
         contentValues.put(COL_2,"ENTERTAINMENT");
         contentValues.put(COL_3,"200");
         contentValues.put(COL_4,"05-March-2020");
@@ -322,6 +323,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_3,"200");
         contentValues.put(COL_4,"01-March-2020");
         db.insert(TABLE_NAME,null,contentValues);
+
         return result;
     }
     public Cursor getHomeData() {
@@ -521,17 +523,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            // Open the empty db as the output stream
+
             OutputStream output = new FileOutputStream(outFileName);
 
-            // Transfer bytes from the input file to the output file
+
             byte[] buffer = new byte[1024];
             int length;
             while ((length = fis.read(buffer)) > 0) {
                 output.write(buffer, 0, length);
             }
 
-            // Close the streams
+
             output.flush();
             output.close();
             fis.close();
@@ -552,17 +554,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            // Open the empty db as the output stream
+
             OutputStream output = new FileOutputStream(outFileName);
 
-            // Transfer bytes from the input file to the output file
+
             byte[] buffer = new byte[1024];
             int length;
             while ((length = fis.read(buffer)) > 0) {
                 output.write(buffer, 0, length);
             }
 
-            // Close the streams
+
             output.flush();
             output.close();
             fis.close();
@@ -573,5 +575,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(mContext, "Unable to import database. Retry", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+    }
+    public void createPdf() throws FileNotFoundException, DocumentException {
+        Permissions.verifyStoragePermissions(mContext);
+
+        String dir = Environment.getExternalStorageDirectory()+File.separator+"Expenses Pdf";
+        File folder = new File(dir);
+        folder.mkdirs();
+
+        File file = new File(dir, "Expense.pdf");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor c1 =db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_NAME, null);
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(file));
+        document.open();
+
+        Font f = new Font(Font.FontFamily.TIMES_ROMAN, 35.0f, Font.BOLD, BaseColor.BLACK);
+
+        Paragraph p3 = new Paragraph();
+        p3.setAlignment(Paragraph.ALIGN_CENTER);
+        p3.setFont(f);
+        p3.add("Your total expenses \n\n\n");
+
+        document.add(p3);
+
+        PdfPTable table = new PdfPTable(4);
+
+        table.addCell(" ID");
+        table.addCell(" NAME");
+        table.addCell(" MONEY");
+        table.addCell(" DATE");
+        table.addCell(" ");
+        table.addCell(" ");
+        table.addCell(" ");
+        table.addCell("");
+
+        while (c1.moveToNext()) {
+            String date = c1.getString(0);
+            String start = c1.getString(1);
+            String end = c1.getString(2);
+            String total = c1.getString(3);
+
+            table.addCell(date);
+            table.addCell(start);
+            table.addCell(end);
+            table.addCell(total);
+        }
+
+        document.add(table);
+        document.addCreationDate();
+        document.close();
     }
 }

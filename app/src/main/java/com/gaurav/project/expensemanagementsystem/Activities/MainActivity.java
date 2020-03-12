@@ -1,22 +1,41 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
+import android.Manifest;
+import android.Manifest.permission;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.widget.NestedScrollView;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,36 +44,43 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.itextpdf.text.DocumentException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission_group.CAMERA;
 import static android.graphics.Color.parseColor;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static final String GOOGLE_ACCOUNT = "google_account";
+
+    private static final int PERMISSION_REQUEST_CODE = 200;
     private LinearLayout linearLayoutCardsRoot;
+    private InterstitialAd mInterstitialAd;
 
     ActionBarDrawerToggle toggle;
     DrawerLayout Drawer;
-    android.support.v7.widget.Toolbar toolbar;
-    android.support.v7.app.ActionBar actionBar;
+    androidx.appcompat.widget.Toolbar toolbar;
+    androidx.appcompat.app.ActionBar actionBar;
     RelativeLayout toolbars;
     NestedScrollView nested_content;
     TextView txtdate, txtdatee, txthome, txtentertainment, txttravelling, txtsports, txtcloths, rlincome;
@@ -69,12 +95,6 @@ public class MainActivity extends AppCompatActivity {
     int flag = 0;
 
     private LocalBackup localBackup;
-
-    private static final String TAG = "Google Drive Activity";
-
-    public static final int REQUEST_CODE_SIGN_IN = 0;
-    public static final int REQUEST_CODE_OPENING = 1;
-    public static final int REQUEST_CODE_CREATION = 2;
     public static final int REQUEST_CODE_PERMISSIONS = 2;
     private boolean isBackup = true;
 
@@ -83,12 +103,83 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
 
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(parseColor("#3f8342"));
         }
 
+        requestPermission();
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-4250344724353850/1387907902");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+
+            }
+
+            @Override
+            public void onAdOpened() {
+
+            }
+
+            @Override
+            public void onAdClicked() {
+
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+
+            }
+
+            @Override
+            public void onAdClosed() {
+
+            }
+        });
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");       //test add
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        AdView adView1 = new AdView(this);              //real add
+        adView1.setAdSize(AdSize.BANNER);
+        adView1.setAdUnitId("ca-app-pub-4250344724353850/8469349248");
+        AdView mAdView1 = findViewById(R.id.adView1);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
+
+        GoogleSignInClient googleSignInClient = null;
         mydb = new DatabaseHelper(MainActivity.this);
 
         txtdate = findViewById(R.id.txtdate);
@@ -97,225 +188,12 @@ public class MainActivity extends AppCompatActivity {
         txtdate.setText("All");
 
         localBackup = new LocalBackup(this);
-/*
-        tvedit = findViewById(R.id.tvedit);
-        tvedit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        mhome = findViewById(R.id.mhome);
-        long home_count = mydb.getTotalOfAmountHome();
-        mhome.setText(String.valueOf(home_count));
-
-        mentertainment = findViewById(R.id.mentertainment);
-        int entertainment_count = mydb.getTotalOfAmountEntertainment();
-        mentertainment.setText(String.valueOf(entertainment_count));
-
-        mtravelling = findViewById(R.id.mtravelling);
-        int travelling_count = mydb.getTotalOfAmountTravelling();
-        mtravelling.setText(String.valueOf(travelling_count));
-
-        mcloth = findViewById(R.id.mcloth);
-        int cloth_count = mydb.getTotalOfAmountCloth();
-        mcloth.setText(String.valueOf(cloth_count));
-
-        msport = findViewById(R.id.msport);
-        int sport_count = mydb.getTotalOfAmountSport();
-        msport.setText(String.valueOf(sport_count));
-
-        mincome = findViewById(R.id.mincome);
-        int income_count = mydb.getTotalOfAmountIncome();
-        mincome.setText(String.valueOf(income_count));
-
-        home = mhome.getText().toString();
-        entertainment = mentertainment.getText().toString();
-        travelling = mtravelling.getText().toString();
-        cloth = mcloth.getText().toString();
-        sport = msport.getText().toString();
-        income = mincome.getText().toString();
-
-        int expensesum = 0;
-        expensesum = expensesum + Integer.parseInt(String.valueOf(Integer.parseInt(home) + Integer.parseInt(entertainment) + Integer.parseInt(travelling) + Integer.parseInt(cloth) + Integer.parseInt(sport)));
-        int savingsum = 0;
-        savingsum = savingsum + Integer.parseInt(income);
-
-        savingamount = findViewById(R.id.savingammount);
-        savingamount.setText(String.valueOf(savingsum));
-
-        expenseamount = findViewById(R.id.expenseamount);
-        expenseamount.setText(String.valueOf(expensesum));
-
-        balanceamount = findViewById(R.id.balanceamount);
-        int balamount = 0;
-        balamount = savingsum - expensesum;
-        if (savingsum > expensesum) {
-            balanceamount.setTextColor(Color.parseColor("#4CAF50"));
-            balanceamount.setText(String.valueOf(balamount));
-
-        } else if (savingsum < expensesum) {
-            balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
-        } else {
-            balanceamount.setTextColor(Color.parseColor("#404a57"));
-            balanceamount.setText("0");
-        }
-
-        llshowhome = findViewById(R.id.llshowhome);
-        llshowhome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.getHomeData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Date :" + res.getString(3) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Home Expenses on " + currentDate, buffer.toString());
-            }
-        });
-
-        llshowentertainment = findViewById(R.id.llshowentertainment);
-        llshowentertainment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.getEntertainmentData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Entertainment Expenses on " + currentDate, buffer.toString());
-            }
-        });
-
-        llshowtravelling = findViewById(R.id.llshowtravelling);
-        llshowtravelling.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.gettTravellingData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Travelling Expenses on " + currentDate, buffer.toString());
-            }
-        });
-
-        llshowcloth = findViewById(R.id.llshowcloth);
-        llshowcloth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.getcClothData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Cloth Expenses on " + currentDate, buffer.toString());
-            }
-        });
-        llshowsports = findViewById(R.id.llshowsport);
-        llshowsports.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.getSportData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Sport Expenses on " + currentDate, buffer.toString());
-            }
-        });
-
-
-        llshowincome = findViewById(R.id.llshowincome);
-        llshowincome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor res = mydb.getIncomeData();
-                if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
-                    return;
-                }
-
-                StringBuffer buffer = new StringBuffer();
-                while (res.moveToNext()) {
-
-                    buffer.append("Id :" + res.getString(0) + "\n");
-                    buffer.append("Money :" + res.getString(2) + "\n");
-                    buffer.append("Name :" + res.getString(1) + "\n\n");
-                }
-
-                //show all data
-
-                showMessage("Income on " + currentDate, buffer.toString());
-            }
-        });
-
-*/
-        if(flag == 0) {
+        if (flag == 0) {
             getAllData();
             /*mydb.inertData1();
-            mydb.inertData2();
 */
-            flag=1;
+            flag = 1;
         }
         txtdatee = findViewById(R.id.txtdatee);
         txtdatee.setText("All");
@@ -373,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -395,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, getString(applicationNameId));
                 String text = "Install this cool application: ";
-                String link = "https://github.com/gaurav2398/ExpenseManagementSystem";
+                String link = "https://github.com/gaurav2398/ExpenseManagementSystems/tree/master/apkfile";
                 i.putExtra(Intent.EXTRA_TEXT, text + " " + link);
                 startActivity(Intent.createChooser(i, "Share link:"));
             }
@@ -412,22 +290,23 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
         Drawer = (DrawerLayout) findViewById(R.id.drawer_layout);        // Drawer object Assigned to the view
+
+
         toggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
-                // open I am not going to put anything here)
+
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
+
             }
-        }; // Drawer Toggle Object Made
-        Drawer.addDrawerListener(toggle); // Drawer Listener set to the Drawer toggle
+        };
+        Drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         Calendar calendar = Calendar.getInstance();
@@ -453,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
         nav_view.setCheckedItem(R.id.all);
 
+
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(final MenuItem item) {
@@ -475,21 +355,14 @@ public class MainActivity extends AppCompatActivity {
                         getMonthData();
                         break;
                     case R.id.year:
-
                         getYearData();
-
                         break;
-                    /*case R.id.choosedate:
 
-                        getChooseDateData();
-                        break;*/
                 }
                 return true;
             }
         });
 
-        // open drawer at start
-        //  drawer.openDrawer(GravityCompat.START);
     }
 
     private void animateCards() {
@@ -535,14 +408,21 @@ public class MainActivity extends AppCompatActivity {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
+            Intent a = new Intent(Intent.ACTION_MAIN);
+            a.addCategory(Intent.CATEGORY_HOME);
+            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(a);
+
             super.onBackPressed();
+
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -555,25 +435,60 @@ public class MainActivity extends AppCompatActivity {
                 String outFileName = Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name) + File.separator;
                 localBackup.performBackup(mydb, outFileName);
 
-               // Toast.makeText(getApplicationContext(), "Backup Successfully Done", Toast.LENGTH_LONG).show();
-
                 return true;
 
             case R.id.restore:
+
                 localBackup.performRestore(mydb);
+
+                getAllData();
                 return true;
 
-            case R.id.pdf:
-                Toast.makeText(getApplicationContext(), "pdf created", Toast.LENGTH_LONG).show();
-                return true;
 
             case R.id.delete:
                 this.deleteDatabase(DatabaseHelper.DATABASE_NAME);
-                String myPath = DatabaseHelper.DATABASE_NAME;
-                SQLiteDatabase.deleteDatabase(new File(myPath));
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "Data Deleted Successfully", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Alert\n");
+                alertDialogBuilder.setMessage("Are you sure you want to delete data?");
+                        alertDialogBuilder.setPositiveButton("Confirm",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+
+                                        String myPath = DatabaseHelper.DATABASE_NAME;
+                                        SQLiteDatabase.deleteDatabase(new File(myPath));
+                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        Toast.makeText(getApplicationContext(), "Data Delete Successfully", Toast.LENGTH_LONG).show();
+
+                                    }
+                                });
+
+                alertDialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+               return true;
+            case R.id.pdf:
+
+                try {
+                    mydb.createPdf();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getApplicationContext(), "PDF Successfully Created", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.viewpdf:
+
+                openPdf(getApplication(),Environment.getExternalStorageDirectory() + File.separator + "Expenses Pdf/Expense.pdf");
                 return true;
 
             default:
@@ -583,9 +498,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void getAllData() {
-        Toast.makeText(getApplicationContext(), "All Selected", Toast.LENGTH_SHORT).show();
-
-
         txtdate = findViewById(R.id.txtdate);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMMM-yyyy");
         final String currentDate = sdf.format(new Date());
@@ -664,7 +576,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getHomeData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -683,13 +595,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         llshowentertainment = findViewById(R.id.llshowentertainment);
         llshowentertainment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Cursor res = mydb.getEntertainmentData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -715,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.gettTravellingData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -741,7 +654,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getcClothData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -766,7 +679,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getSportData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
+                    showMessage("Empty", "Nothing Found ");
                     return;
                 }
 
@@ -793,7 +706,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getIncomeData();
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
+                    showMessage("Empty", "Nothing Found");
                     return;
                 }
 
@@ -806,7 +719,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Date :" + res.getString(3) + "\n");
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
-                //show all data
+
                 showMessage("Income on " + currentDate, buffer.toString());
             }
         });
@@ -857,7 +770,6 @@ public class MainActivity extends AppCompatActivity {
         mincome.setText(String.valueOf(income_count));
 
 
-
         home = mhome.getText().toString();
         entertainment = mentertainment.getText().toString();
         travelling = mtravelling.getText().toString();
@@ -898,7 +810,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getHomeDataDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -922,7 +834,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getEntertainmentDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -948,7 +860,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.gettTravellingDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -972,7 +884,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getcClothDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -997,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getSportDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
+                    showMessage("Empty", "Nothing Found ");
                     return;
                 }
 
@@ -1024,7 +936,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getIncomeDateWise(currentDate);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
+                    showMessage("Empty", "Nothing Found");
                     return;
                 }
 
@@ -1132,7 +1044,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getHomeDataMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                 }
                 StringBuffer buffer = new StringBuffer();
                 while (res.moveToNext()) {
@@ -1145,7 +1057,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Home Expenses on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Home Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
 
@@ -1155,7 +1067,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getEntertainmentMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1170,7 +1082,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //show all data
-                showMessage("Entertainment Expenses on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Entertainment Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
         llshowtravelling = findViewById(R.id.llshowtravelling);
@@ -1179,7 +1091,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.gettTravellingMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1195,7 +1107,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Travelling Expenses on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Travelling Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
         llshowcloth = findViewById(R.id.llshowcloth);
@@ -1204,7 +1116,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getcClothMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
                 StringBuffer buffer = new StringBuffer();
@@ -1215,7 +1127,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Cloth Expenses on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Cloth Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
         llshowsports = findViewById(R.id.llshowsport);
@@ -1224,7 +1136,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getSportMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
+                    showMessage("Empty", "Nothing Found ");
                     return;
                 }
                 StringBuffer buffer = new StringBuffer();
@@ -1238,7 +1150,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Sport Expenses on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Sport Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
         llshowincome = findViewById(R.id.llshowincome);
@@ -1247,7 +1159,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = mydb.getIncomeMonthWise(currentMonth);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
+                    showMessage("Empty", "Nothing Found");
                     return;
                 }
 
@@ -1259,12 +1171,12 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Income on " +String.valueOf(currentMonth)+ " Month", buffer.toString());
+                showMessage("Income on " + String.valueOf(currentMonth) + " Month", buffer.toString());
             }
         });
     }
 
-    public void getYearData(){
+    public void getYearData() {
         final String yeardata;
         Calendar calendar = Calendar.getInstance();
         final Date currentyear = calendar.getTime();                                    //getting current year
@@ -1287,27 +1199,27 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mhome = findViewById(R.id.mhome);
-        long home_count =  mydb.getTotalOfAmountYearWise("HOME",curryear);
+        long home_count = mydb.getTotalOfAmountYearWise("HOME", curryear);
         mhome.setText(String.valueOf(home_count));
 
         mentertainment = findViewById(R.id.mentertainment);
-        long entertainment_count = mydb.getTotalOfAmountYearWise("ENTERTAINMENT",curryear);
+        long entertainment_count = mydb.getTotalOfAmountYearWise("ENTERTAINMENT", curryear);
         mentertainment.setText(String.valueOf(entertainment_count));
 
         mtravelling = findViewById(R.id.mtravelling);
-        long travelling_count = mydb.getTotalOfAmountYearWise("TRAVELLING",curryear);
+        long travelling_count = mydb.getTotalOfAmountYearWise("TRAVELLING", curryear);
         mtravelling.setText(String.valueOf(travelling_count));
 
         mcloth = findViewById(R.id.mcloth);
-        long cloth_count = mydb.getTotalOfAmountYearWise("CLOTH",curryear);
+        long cloth_count = mydb.getTotalOfAmountYearWise("CLOTH", curryear);
         mcloth.setText(String.valueOf(cloth_count));
 
         msport = findViewById(R.id.msport);
-        long sport_count = mydb.getTotalOfAmountYearWise("SPORT",curryear);
+        long sport_count = mydb.getTotalOfAmountYearWise("SPORT", curryear);
         msport.setText(String.valueOf(sport_count));
 
         mincome = findViewById(R.id.mincome);
-        long income_count = mydb.getTotalOfAmountYearWise("INCOME",curryear);
+        long income_count = mydb.getTotalOfAmountYearWise("INCOME", curryear);
         mincome.setText(String.valueOf(income_count));
 
         home = mhome.getText().toString();
@@ -1348,9 +1260,9 @@ public class MainActivity extends AppCompatActivity {
         llshowhome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("HOME",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("HOME", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                 }
                 StringBuffer buffer = new StringBuffer();
                 while (res.moveToNext()) {
@@ -1363,7 +1275,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Home Expenses on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Home Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
 
@@ -1371,9 +1283,9 @@ public class MainActivity extends AppCompatActivity {
         llshowentertainment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("ENTERTAINMENT",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("ENTERTAINMENT", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1384,16 +1296,16 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Date :" + res.getString(3) + "\n");
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
-                showMessage("Entertainment Expenses on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Entertainment Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
         llshowtravelling = findViewById(R.id.llshowtravelling);
         llshowtravelling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("TRAVELLING",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("TRAVELLING", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1409,16 +1321,16 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Travelling Expenses on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Travelling Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
         llshowcloth = findViewById(R.id.llshowcloth);
         llshowcloth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("CLOTH",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("CLOTH", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
                 StringBuffer buffer = new StringBuffer();
@@ -1429,16 +1341,16 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Cloth Expenses on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Cloth Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
         llshowsports = findViewById(R.id.llshowsport);
         llshowsports.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("SPORT",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("SPORT", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
+                    showMessage("Empty", "Nothing Found ");
                     return;
                 }
                 StringBuffer buffer = new StringBuffer();
@@ -1448,20 +1360,19 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Money :" + res.getString(2) + "\n");
                     buffer.append("Date :" + res.getString(3) + "\n");
                     buffer.append("Name :" + res.getString(1) + "\n\n");
+
                 }
 
-                //show all data
-
-                showMessage("Sport Expenses on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Sport Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
         llshowincome = findViewById(R.id.llshowincome);
         llshowincome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataYearWise("INCOME",yeardata);
+                Cursor res = mydb.getHomeDataYearWise("INCOME", yeardata);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
+                    showMessage("Empty", "Nothing Found");
                     return;
                 }
 
@@ -1473,7 +1384,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Income on " +String.valueOf(yeardata)+ " Year", buffer.toString());
+                showMessage("Income on " + String.valueOf(yeardata) + " Year", buffer.toString());
             }
         });
 
@@ -1481,7 +1392,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getWeekData() {
-        Calendar c1 = Calendar.getInstance();
+        Calendar c1 = Calendar.getInstance(new Locale("en","USA"));
         //first day of week
         c1.set(Calendar.DAY_OF_WEEK, 1);
 
@@ -1514,21 +1425,7 @@ public class MainActivity extends AppCompatActivity {
         if (Integer.parseInt(day1) < 10) {
             day1 = "0" + day1;
         }
-        if (Integer.parseInt(day2) < 10) {
-            day2 = "0" + day2;
-        }
-        if (Integer.parseInt(day3) < 10) {
-            day3 = "0" + day3;
-        }
-        if (Integer.parseInt(day4) < 10) {
-            day4 = "0" + day4;
-        }
-        if (Integer.parseInt(day5) < 10) {
-            day5 = "0" + day5;
-        }
-        if (Integer.parseInt(day6) < 10) {
-            day6 = "0" + day6;
-        }
+
         if (Integer.parseInt(day7) < 10) {
             day7 = "0" + day7;
         }
@@ -1698,9 +1595,9 @@ public class MainActivity extends AppCompatActivity {
         llshowhome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res = mydb.getHomeDataWeekWise("HOME",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("HOME", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1722,9 +1619,9 @@ public class MainActivity extends AppCompatActivity {
         llshowentertainment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res =  mydb.getHomeDataWeekWise("ENTERTAINMENT",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("ENTERTAINMENT", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1747,9 +1644,9 @@ public class MainActivity extends AppCompatActivity {
         llshowtravelling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res =  mydb.getHomeDataWeekWise("TRAVELLING",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("TRAVELLING", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1773,9 +1670,9 @@ public class MainActivity extends AppCompatActivity {
         llshowcloth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res =  mydb.getHomeDataWeekWise("CLOTH",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("CLOTH", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing found");
+                    showMessage("Empty", "Nothing found");
                     return;
                 }
 
@@ -1798,9 +1695,9 @@ public class MainActivity extends AppCompatActivity {
         llshowsports.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res =  mydb.getHomeDataWeekWise("SPORT",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("SPORT", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found ");
+                    showMessage("Empty", "Nothing Found ");
                     return;
                 }
 
@@ -1820,14 +1717,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         llshowincome = findViewById(R.id.llshowincome);
         llshowincome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor res =  mydb.getHomeDataWeekWise("INCOME",week1, week2);
+                Cursor res = mydb.getHomeDataWeekWise("INCOME", week1, week2);
                 if (res.getCount() == 0) {
-                    showMessage("Error", "Nothing Found");
+                    showMessage("Empty", "Nothing Found");
                     return;
                 }
 
@@ -1845,4 +1741,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    public void openPdf(Context context, String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+
+                PackageManager pm = context.getPackageManager();
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                sendIntent.setType("application/pdf");
+                Intent openInChooser = Intent.createChooser(intent, "Choose");
+                List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
+                if (resInfo.size() > 0) {
+                    try {
+                        context.startActivity(openInChooser);
+                    } catch (Throwable throwable) {
+                        Toast.makeText(MainActivity.this, "PDF apps are not installed \nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
+
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "PDF apps are not installed\nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        else {
+            Toast.makeText(MainActivity.this, "PDF file not exists\nPlease create PDF file", Toast.LENGTH_LONG).show();
+        }
+
     }
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                {READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {
+                            showMessageOKCancel("You need to allow access to the permissions",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions(new String[]{CAMERA, Manifest.permission.CAMERA},
+                                                        PERMISSION_REQUEST_CODE);
+                                            }
+                                        }
+                                    });
+                            return;
+                        }
+                    }
+
+                }
+                break;
+        }
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(getApplicationContext())
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+}

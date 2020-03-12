@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -18,8 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -43,6 +48,27 @@ public class ClothsActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#3f8342"));
         }
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        AdView adView = new AdView(this);                   //test add
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        AdView mAdView = findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
+        AdView adView1 = new AdView(this);                      //real add
+        adView1.setAdSize(AdSize.BANNER);
+        adView1.setAdUnitId("ca-app-pub-4250344724353850/9635091257");
+        AdView mAdView1 = findViewById(R.id.adView);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
 
         mydb = new DatabaseHelper(this);
 
@@ -75,7 +101,6 @@ public class ClothsActivity extends AppCompatActivity {
                     }
                 }catch(Exception e){
                     //    Toast.makeText(EditaActivity.this, "Invalid Id", Toast.LENGTH_SHORT).show();
-
                     edtincome.setHint("Cannot be too large");
                     e.printStackTrace();
                 }
@@ -92,6 +117,7 @@ public class ClothsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+                finish();
             }
         });
 
@@ -100,9 +126,15 @@ public class ClothsActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtincome.length()==0 )
+
+                if (edtincome.length()==0)
                 {
                     Toast.makeText(ClothsActivity.this, "Enter Valid Amount", Toast.LENGTH_SHORT).show();
+                    edtincome.requestFocus();
+                }
+                else if (edtincome.getText().toString().equals("0")||edtincome.getText().toString().equals("00")||edtincome.getText().toString().equals("000")||edtincome.getText().toString().equals("0000")||edtincome.getText().toString().equals("00000")||edtincome.getText().toString().equals("000000")||edtincome.getText().toString().equals("0000000")||edtincome.getText().toString().equals("00000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("0000000000"))
+                {
+                    Toast.makeText(ClothsActivity.this, "Amount should be greater than 0", Toast.LENGTH_SHORT).show();
                     edtincome.requestFocus();
                 }
                 else
@@ -126,6 +158,10 @@ public class ClothsActivity extends AppCompatActivity {
         });
 
    }
-
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 }
 

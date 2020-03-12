@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -19,8 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,7 +34,7 @@ public class EditaActivity extends AppCompatActivity {
     TextView txtdate;
     EditText edtincome,edtid,edtname;
     ImageView back;
-    Button submit,update,delete;
+    Button update,delete;
 
     DatabaseHelper mydb;
 
@@ -43,6 +48,27 @@ public class EditaActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#3f8342"));
         }
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        AdView adView = new AdView(this);                   //test add
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        AdView mAdView = findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
+        AdView adView1 = new AdView(this);                      //real add
+        adView1.setAdSize(AdSize.BANNER);
+        adView1.setAdUnitId("ca-app-pub-4250344724353850/9635091257");
+        AdView mAdView1 = findViewById(R.id.adView);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
+
 
         mydb = new DatabaseHelper(this);
 
@@ -87,6 +113,7 @@ public class EditaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+                finish();
             }
         });
 
@@ -121,7 +148,7 @@ public class EditaActivity extends AppCompatActivity {
         String s = edtid.getText().toString();
         if (s.length()==0){
             edtname.setText("");
-            edtname.setHint("Enter id");
+            edtname.setHint("Expense Category");
         }
         edtid.addTextChangedListener(new TextWatcher() {
             @Override
@@ -143,16 +170,12 @@ public class EditaActivity extends AppCompatActivity {
                         }
 
                     }else{
-                        edtname.setHint("Enter valid id");                  // to show error msg here
+                        edtname.setHint("Category Not Found");
                         edtname.setText("");
-                //        Toast.makeText(EditaActivity.this, "Invalid Id", Toast.LENGTH_SHORT).show();
-
                     }
                 }catch(Exception e){
-                    //    Toast.makeText(EditaActivity.this, "Invalid Id", Toast.LENGTH_SHORT).show();
-
                     edtname.setText("");
-                    edtname.setHint("Enter valid id");
+                    edtname.setHint("Category Not Found");
                     e.printStackTrace();
                 }
             }
@@ -161,7 +184,7 @@ public class EditaActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if (s.length()==0){
                     edtname.setText("");
-                    edtname.setHint("Enter id");
+                    edtname.setHint("Expense Category");
                 }
 
             }
@@ -171,10 +194,20 @@ public class EditaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boolean isUpdate = mydb.updateData(edtid.getText().toString(),edtname.getText().toString(),edtincome.getText().toString());
-                if (edtname.length()==0)
+                if (edtid.length()==0)
                 {
-                    Toast.makeText(EditaActivity.this, "Enter valid Id to update data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditaActivity.this, "Enter valid ID", Toast.LENGTH_SHORT).show();
                 }
+                else if (edtincome.length()==0)
+                {
+                    Toast.makeText(EditaActivity.this, "Enter Amount", Toast.LENGTH_SHORT).show();
+                }
+                else if (edtincome.getText().toString().equals("0")||edtincome.getText().toString().equals("00")||edtincome.getText().toString().equals("000")||edtincome.getText().toString().equals("0000")||edtincome.getText().toString().equals("00000")||edtincome.getText().toString().equals("000000")||edtincome.getText().toString().equals("0000000")||edtincome.getText().toString().equals("00000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("0000000000"))
+                {
+                    Toast.makeText(EditaActivity.this, "Amount should be greater than 0", Toast.LENGTH_SHORT).show();
+                    edtincome.requestFocus();
+                }
+
                 else {
 
                 if (isUpdate == true)
@@ -193,6 +226,11 @@ public class EditaActivity extends AppCompatActivity {
         });
 
 
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
 }
