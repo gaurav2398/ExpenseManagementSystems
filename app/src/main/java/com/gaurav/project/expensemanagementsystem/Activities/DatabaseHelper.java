@@ -422,12 +422,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
-    public Cursor getcClothDateChooseDateDate(String choosedate) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='CLOTH' AND date='"+choosedate+"' ORDER BY  date";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
     public Cursor getSportData() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='SPORT' ORDER BY  id" ;
@@ -502,7 +496,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public void backup(String outFileName) {
 
-        //database path
         final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
 
         try {

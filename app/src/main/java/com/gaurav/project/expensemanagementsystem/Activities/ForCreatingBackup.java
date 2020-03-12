@@ -17,11 +17,11 @@ import com.gaurav.project.expensemanagementsystem.R;
 
 import java.io.File;
 
-public class LocalBackup {
+public class ForCreatingBackup {
 
     private MainActivity activity;
 
-    public LocalBackup(MainActivity activity) {
+    public ForCreatingBackup(MainActivity activity) {
         this.activity = activity;
         ;
     }

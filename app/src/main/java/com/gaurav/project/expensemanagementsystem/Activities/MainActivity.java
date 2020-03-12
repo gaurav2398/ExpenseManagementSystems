@@ -1,9 +1,7 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
 import android.Manifest;
-import android.Manifest.permission;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +23,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -36,7 +33,6 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,8 +41,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -58,7 +52,6 @@ import com.itextpdf.text.DocumentException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -96,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     int flag = 0;
 
-    private LocalBackup localBackup;
+    private ForCreatingBackup localBackup;
     public static final int REQUEST_CODE_PERMISSIONS = 2;
     private boolean isBackup = true;
 
@@ -189,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         final String currentDate = sdf.format(new Date());
         txtdate.setText("All");
 
-        localBackup = new LocalBackup(this);
+        localBackup = new ForCreatingBackup(this);
 
         if (flag == 0) {
             getAllData();
@@ -275,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, getString(applicationNameId));
                 String text = "Install this cool application: ";
-                String link = "https://github.com/";
+                String link = "https://github.com/gaurav2398/ExpenseManagementSystems";
                 i.putExtra(Intent.EXTRA_TEXT, text + " " + link);
                 startActivity(Intent.createChooser(i, "Share link:"));
             }
@@ -514,26 +507,30 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mhome = findViewById(R.id.mhome);
+        mentertainment = findViewById(R.id.mentertainment);
+        mtravelling = findViewById(R.id.mtravelling);
+        mcloth = findViewById(R.id.mcloth);
+        msport = findViewById(R.id.msport);
+        mincome = findViewById(R.id.mincome);
+        savingamount = findViewById(R.id.savingammount);
+        expenseamount = findViewById(R.id.expenseamount);
+        balanceamount = findViewById(R.id.balanceamount);
+
         long home_count = mydb.getTotalOfAmountHome();
         mhome.setText(String.valueOf(home_count));
 
-        mentertainment = findViewById(R.id.mentertainment);
         long entertainment_count = mydb.getTotalOfAmountEntertainment();
         mentertainment.setText(String.valueOf(entertainment_count));
 
-        mtravelling = findViewById(R.id.mtravelling);
         long travelling_count = mydb.getTotalOfAmountTravelling();
         mtravelling.setText(String.valueOf(travelling_count));
 
-        mcloth = findViewById(R.id.mcloth);
         long cloth_count = mydb.getTotalOfAmountCloth();
         mcloth.setText(String.valueOf(cloth_count));
 
-        msport = findViewById(R.id.msport);
         long sport_count = mydb.getTotalOfAmountSport();
         msport.setText(String.valueOf(sport_count));
 
-        mincome = findViewById(R.id.mincome);
         long income_count = mydb.getTotalOfAmountIncome();
         mincome.setText(String.valueOf(income_count));
 
@@ -551,13 +548,10 @@ public class MainActivity extends AppCompatActivity {
 
         savingsum = savingsum + Long.valueOf(income);
 
-        savingamount = findViewById(R.id.savingammount);
         savingamount.setText(String.valueOf(savingsum));
 
-        expenseamount = findViewById(R.id.expenseamount);
         expenseamount.setText(String.valueOf(expensesum));
 
-        balanceamount = findViewById(R.id.balanceamount);
         Long balamount = Long.valueOf(0);
         balamount = savingsum - expensesum;
         if (savingsum > expensesum) {
