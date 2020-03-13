@@ -7,25 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
-import android.os.Environment;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "expense.db";
@@ -377,12 +358,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
-    public Cursor getEntertainmentChooseDateData(String choosedate) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='ENTERTAINMENT' AND date='"+choosedate+"' ORDER BY  date";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
     public Cursor gettTravellingData() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='TRAVELLING' ORDER BY  id" ;
@@ -442,12 +417,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return c;
     }
 
-    public Cursor getSportChooseDate(String choosedate) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='SPORT' AND date='"+choosedate+"' ORDER BY  date";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
+
     public Cursor getIncomeData() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name='INCOME' ORDER BY  id" ;
@@ -493,119 +463,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Integer deleteData(String id){
         SQLiteDatabase db = this.getWritableDatabase();
         return  db.delete(TABLE_NAME,"ID = ?",new String[] { id });
-    }
-    public void backup(String outFileName) {
-
-        final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
-
-        try {
-
-            File dbFile = new File(inFileName);
-            FileInputStream fis = new FileInputStream(dbFile);
-
-
-            OutputStream output = new FileOutputStream(outFileName);
-
-
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-
-            output.flush();
-            output.close();
-            fis.close();
-
-            Toast.makeText(mContext, "Backup Completed", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(mContext, "Unable to backup database. Retry", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    public void importDB(String inFileName) {
-
-        final String outFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
-
-        try {
-
-            File dbFile = new File(inFileName);
-            FileInputStream fis = new FileInputStream(dbFile);
-
-
-            OutputStream output = new FileOutputStream(outFileName);
-
-
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-
-            output.flush();
-            output.close();
-            fis.close();
-
-            Toast.makeText(mContext, "Import Completed", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(mContext, "Unable to import database. Retry", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    public void createPdf() throws FileNotFoundException, DocumentException {
-        Permissions.verifyStoragePermissions(mContext);
-
-        String dir = Environment.getExternalStorageDirectory()+File.separator+"Expenses Pdf";
-        File folder = new File(dir);
-        folder.mkdirs();
-
-        File file = new File(dir, "Expense.pdf");
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor c1 =db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_NAME, null);
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(file));
-        document.open();
-
-        Font f = new Font(Font.FontFamily.TIMES_ROMAN, 35.0f, Font.BOLD, BaseColor.BLACK);
-
-        Paragraph p3 = new Paragraph();
-        p3.setAlignment(Paragraph.ALIGN_CENTER);
-        p3.setFont(f);
-        p3.add("Your total expenses \n\n\n");
-
-        document.add(p3);
-
-        PdfPTable table = new PdfPTable(4);
-
-        table.addCell(" ID");
-        table.addCell(" NAME");
-        table.addCell(" MONEY");
-        table.addCell(" DATE");
-        table.addCell(" ");
-        table.addCell(" ");
-        table.addCell(" ");
-        table.addCell("");
-
-        while (c1.moveToNext()) {
-            String date = c1.getString(0);
-            String start = c1.getString(1);
-            String end = c1.getString(2);
-            String total = c1.getString(3);
-
-            table.addCell(date);
-            table.addCell(start);
-            table.addCell(end);
-            table.addCell(total);
-        }
-
-        document.add(table);
-        document.addCreationDate();
-        document.close();
     }
 }

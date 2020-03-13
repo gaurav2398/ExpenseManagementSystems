@@ -18,13 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,25 +40,6 @@ public class TravellingActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#3f8342"));
         }
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-        AdView adView = new AdView(this);                   //test add
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdView mAdView = findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
-
-        AdView adView1 = new AdView(this);                      //real add
-        adView1.setAdSize(AdSize.BANNER);
-        adView1.setAdUnitId("ca-app-pub-4250344724353850/9635091257");
-        AdView mAdView1 = findViewById(R.id.adView);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-        mAdView1.loadAd(adRequest1);
 
         mydb = new DatabaseHelper(this);
 

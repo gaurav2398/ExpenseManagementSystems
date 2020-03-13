@@ -26,10 +26,6 @@
             android:id="@+id/year"
             android:icon="@drawable/ccp_ic_arrow_drop_down"
             android:title="Year" />
-       <!--<item
-            android:id="@+id/choosedate"
-           android:icon="@drawable/ccp_ic_arrow_drop_down"
-            android:title="Choose Date" />-->
     </group>
 
 </menu>

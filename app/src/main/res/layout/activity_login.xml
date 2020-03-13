@@ -30,25 +30,14 @@
         android:layout_width="match_parent"
         android:layout_height="320dp"
         android:src="@drawable/expenses"/>
-    <com.google.android.gms.common.SignInButton
+    <Button
         android:id="@+id/sign_in_button"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center"
         android:padding="5dp"
+        android:text="Google Login"
         android:layout_width="220dp"
         android:layout_height="wrap_content" />
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-4250344724353850/2665879296">
-    </com.google.android.gms.ads.AdView>
-
 
 </LinearLayout>
 

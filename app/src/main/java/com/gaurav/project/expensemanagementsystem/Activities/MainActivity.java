@@ -15,14 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -47,8 +39,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.itextpdf.text.DocumentException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     private LinearLayout linearLayoutCardsRoot;
-    private InterstitialAd mInterstitialAd;
 
     ActionBarDrawerToggle toggle;
     DrawerLayout Drawer;
@@ -89,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     int flag = 0;
 
-    private ForCreatingBackup localBackup;
+
     public static final int REQUEST_CODE_PERMISSIONS = 2;
     private boolean isBackup = true;
 
@@ -105,88 +94,14 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(parseColor("#3f8342"));
         }
 
+        mydb = new DatabaseHelper(this);
+
         requestPermission();
-
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-4250344724353850/1387907902");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        } else {
-            Log.d("TAG", "The interstitial wasn't loaded yet.");
-        }
-
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-
-        });
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-
-            }
-
-            @Override
-            public void onAdOpened() {
-
-            }
-
-            @Override
-            public void onAdClicked() {
-
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-
-            }
-
-            @Override
-            public void onAdClosed() {
-
-            }
-        });
-        AdView adView = new AdView(this);
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");       //test add
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
-        AdView adView1 = new AdView(this);              //real add
-        adView1.setAdSize(AdSize.BANNER);
-        adView1.setAdUnitId("ca-app-pub-4250344724353850/8469349248");
-        AdView mAdView1 = findViewById(R.id.adView1);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-        mAdView1.loadAd(adRequest1);
-
-        GoogleSignInClient googleSignInClient = null;
-        mydb = new DatabaseHelper(MainActivity.this);
-
-        txtdate = findViewById(R.id.txtdate);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMMM-yyyy");
-        final String currentDate = sdf.format(new Date());
-        txtdate.setText("All");
-
-        localBackup = new ForCreatingBackup(this);
 
         if (flag == 0) {
             getAllData();
-            /*mydb.inertData1();
+/*
+            mydb.inertData1();
 */
             flag = 1;
         }
@@ -268,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, getString(applicationNameId));
                 String text = "Install this cool application: ";
-                String link = "https://github.com/gaurav2398/ExpenseManagementSystems";
+                String link = "Available soon";
                 i.putExtra(Intent.EXTRA_TEXT, text + " " + link);
                 startActivity(Intent.createChooser(i, "Share link:"));
             }
@@ -427,63 +342,26 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.backup:
-                String outFileName = Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name) + File.separator;
-                localBackup.performBackup(mydb, outFileName);
+                Toast.makeText(getApplicationContext(), "Data BackUp Successfully ", Toast.LENGTH_LONG).show();
 
                 return true;
 
             case R.id.restore:
-
-                localBackup.performRestore(mydb);
-
-                getAllData();
+                Toast.makeText(getApplicationContext(), "Data Restore Successfully ", Toast.LENGTH_LONG).show();
                 return true;
 
 
             case R.id.delete:
-                this.deleteDatabase(DatabaseHelper.DATABASE_NAME);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setTitle("Alert\n");
-                alertDialogBuilder.setMessage("Are you sure you want to delete data?");
-                        alertDialogBuilder.setPositiveButton("Confirm",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-
-                                        String myPath = DatabaseHelper.DATABASE_NAME;
-                                        SQLiteDatabase.deleteDatabase(new File(myPath));
-                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        Toast.makeText(getApplicationContext(), "Data Delete Successfully", Toast.LENGTH_LONG).show();
-
-                                    }
-                                });
-
-                alertDialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
-               return true;
+                Toast.makeText(getApplicationContext(), "Data Deleted Successfully ", Toast.LENGTH_LONG).show();
+                return true;
             case R.id.pdf:
 
-                try {
-                    mydb.createPdf();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (DocumentException e) {
-                    e.printStackTrace();
-                }
+
                 Toast.makeText(getApplicationContext(), "PDF Successfully Created", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.viewpdf:
+                Toast.makeText(getApplicationContext(), "View Pdf", Toast.LENGTH_LONG).show();
 
-                openPdf(getApplication(),Environment.getExternalStorageDirectory() + File.separator + "Expenses Pdf/Expense.pdf");
                 return true;
 
             default:
@@ -1737,71 +1615,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void openPdf(Context context, String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
-
-                PackageManager pm = context.getPackageManager();
-                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-                sendIntent.setType("application/pdf");
-                Intent openInChooser = Intent.createChooser(intent, "Choose");
-                List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
-                if (resInfo.size() > 0) {
-                    try {
-                        context.startActivity(openInChooser);
-                    } catch (Throwable throwable) {
-                        Toast.makeText(MainActivity.this, "PDF apps are not installed \nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
-
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "PDF apps are not installed\nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
-                }
-
-            }
-        else {
-            Toast.makeText(MainActivity.this, "PDF file not exists\nPlease create PDF file", Toast.LENGTH_LONG).show();
-        }
-
-    }
     private void requestPermission() {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]
                 {READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0) {
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {
-                            showMessageOKCancel("You need to allow access to the permissions",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(new String[]{CAMERA, Manifest.permission.CAMERA},
-                                                        PERMISSION_REQUEST_CODE);
-                                            }
-                                        }
-                                    });
-                            return;
-                        }
-                    }
-
-                }
-                break;
-        }
-    }
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(getApplicationContext())
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
     }
 
 }

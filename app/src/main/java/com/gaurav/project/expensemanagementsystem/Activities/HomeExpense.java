@@ -19,15 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,7 +28,6 @@ public class HomeExpense extends AppCompatActivity {
     EditText edtincome,edtid;
     ImageView back;
     Button submit,update,delete;
-    private InterstitialAd mInterstitialAd;
 
     DatabaseHelper mydb;
 
@@ -52,57 +42,6 @@ public class HomeExpense extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#3f8342"));
         }
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        AdRequest request = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
-
-        mInterstitialAd.loadAd(request);
-
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        } else {
-            Log.d("TAG", "The interstitial wasn't loaded yet.");
-        }
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                // Load the next interstitial.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                mInterstitialAd.show();
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                } else {
-                    HandleOnAdLoaded();
-                    Log.d("TAG", "The interstitial wasn't loaded yet.");
-                }
-
-            }
-
-        });
-
-        AdView adView = new AdView(this);                   //test add
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdView mAdView = findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
-
-        AdView adView1 = new AdView(this);                      //real add
-        adView1.setAdSize(AdSize.BANNER);
-        adView1.setAdUnitId("ca-app-pub-4250344724353850/2665879296");
-        AdView mAdView1 = findViewById(R.id.adView);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-        mAdView1.loadAd(adRequest1);
-
-
 
         mydb = new DatabaseHelper(this);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMMM-yyyy");
@@ -192,10 +131,6 @@ public class HomeExpense extends AppCompatActivity {
             }
         });
     }
-    void HandleOnAdLoaded()
-    {
-        mInterstitialAd.show();
-          }
 
     @Override
     public void onBackPressed() {
