@@ -34,7 +34,7 @@
             android:layout_marginLeft="45dp"
             android:fontFamily="@font/sfsemibold"
             android:gravity="center"
-            android:text="New Expense"
+            android:text="New Income"
             android:textColor="#404a57"
             android:textSize="16sp" />
 

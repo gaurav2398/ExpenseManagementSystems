@@ -161,16 +161,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         actionBar = getSupportActionBar();
 
-        toolbars = (RelativeLayout) findViewById(R.id.layout1);
+        toolbars = findViewById(R.id.layout1);
 
 
-        nested_content = (NestedScrollView) findViewById(R.id.nested_scroll_view);
+        nested_content = findViewById(R.id.nested_scroll_view);
 
 
         sharelink = findViewById(R.id.sharelink);
@@ -198,8 +198,8 @@ public class MainActivity extends AppCompatActivity {
 
         animateCards();
 
-        NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
-        Drawer = (DrawerLayout) findViewById(R.id.drawer_layout);        // Drawer object Assigned to the view
+        NavigationView nav_view = findViewById(R.id.nav_view);
+        Drawer = findViewById(R.id.drawer_layout);        // Drawer object Assigned to the view
 
 
         toggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
@@ -267,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.year:
                         getYearData();
                         break;
-
                 }
                 return true;
             }
@@ -314,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -438,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (savingsum < expensesum) {
             balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
+            balanceamount.setText("" + balamount);
         } else {
             balanceamount.setTextColor(Color.parseColor("#404a57"));
             balanceamount.setText("0");
@@ -673,7 +672,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (savingsum < expensesum) {
             balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
+            balanceamount.setText("" + balamount);
         } else {
             balanceamount.setTextColor(Color.parseColor("#404a57"));
             balanceamount.setText("0");
@@ -907,7 +906,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (savingsum < expensesum) {
             balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
+            balanceamount.setText("" + balamount);
         } else {
             balanceamount.setTextColor(Color.parseColor("#404a57"));
             balanceamount.setText("0");
@@ -931,7 +930,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Home Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Home Expenses on " + currentMonth + " Month", buffer.toString());
             }
         });
 
@@ -956,7 +955,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //show all data
-                showMessage("Entertainment Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Entertainment Expenses on " + currentMonth + " Month", buffer.toString());
             }
         });
         llshowtravelling = findViewById(R.id.llshowtravelling);
@@ -981,7 +980,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Travelling Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Travelling Expenses on " + currentMonth + " Month", buffer.toString());
             }
         });
         llshowcloth = findViewById(R.id.llshowcloth);
@@ -1001,7 +1000,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Cloth Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Cloth Expenses on " + currentMonth + " Month", buffer.toString());
             }
         });
         llshowsports = findViewById(R.id.llshowsport);
@@ -1024,7 +1023,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Sport Expenses on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Sport Expenses on " + currentMonth + " Month", buffer.toString());
             }
         });
         llshowincome = findViewById(R.id.llshowincome);
@@ -1045,7 +1044,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Income on " + String.valueOf(currentMonth) + " Month", buffer.toString());
+                showMessage("Income on " + currentMonth + " Month", buffer.toString());
             }
         });
     }
@@ -1125,7 +1124,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (savingsum < expensesum) {
             balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
+            balanceamount.setText("" + balamount);
         } else {
             balanceamount.setTextColor(Color.parseColor("#404a57"));
             balanceamount.setText("0");
@@ -1149,7 +1148,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Home Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Home Expenses on " + yeardata + " Year", buffer.toString());
             }
         });
 
@@ -1170,7 +1169,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Date :" + res.getString(3) + "\n");
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
-                showMessage("Entertainment Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Entertainment Expenses on " + yeardata + " Year", buffer.toString());
             }
         });
         llshowtravelling = findViewById(R.id.llshowtravelling);
@@ -1195,7 +1194,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Travelling Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Travelling Expenses on " + yeardata + " Year", buffer.toString());
             }
         });
         llshowcloth = findViewById(R.id.llshowcloth);
@@ -1215,7 +1214,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Cloth Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Cloth Expenses on " + yeardata + " Year", buffer.toString());
             }
         });
         llshowsports = findViewById(R.id.llshowsport);
@@ -1237,7 +1236,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                showMessage("Sport Expenses on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Sport Expenses on " + yeardata + " Year", buffer.toString());
             }
         });
         llshowincome = findViewById(R.id.llshowincome);
@@ -1258,7 +1257,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
                 //show all data
-                showMessage("Income on " + String.valueOf(yeardata) + " Year", buffer.toString());
+                showMessage("Income on " + yeardata + " Year", buffer.toString());
             }
         });
 
@@ -1459,7 +1458,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (savingsum < expensesum) {
             balanceamount.setTextColor(Color.parseColor("#F44336"));
-            balanceamount.setText("" + String.valueOf(balamount));
+            balanceamount.setText("" + balamount);
         } else {
             balanceamount.setTextColor(Color.parseColor("#404a57"));
             balanceamount.setText("0");
