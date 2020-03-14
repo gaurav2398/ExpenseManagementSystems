@@ -119,10 +119,7 @@ public class HomeExpense extends AppCompatActivity {
                     {
                         Toast.makeText(HomeExpense.this, "Data not inserted", Toast.LENGTH_SHORT).show();
                     }
-/*
-                    Toast.makeText(HomeExpense.this, "Money added to home successfully\n"+edtincome.getText().toString()
-                    , Toast.LENGTH_SHORT).show();
-*/
+
                     Intent i = new Intent(HomeExpense.this, MainActivity.class);
                     startActivity(i);
                     finish();

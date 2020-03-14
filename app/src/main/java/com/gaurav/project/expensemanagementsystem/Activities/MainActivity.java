@@ -464,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Home Expenses on " + currentDate, buffer.toString());
+                showMessage("All Home Expenses", buffer.toString());
             }
         });
 
@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Entertainment Expenses on " + currentDate, buffer.toString());
+                showMessage("All Entertainment Expenses", buffer.toString());
             }
         });
 
@@ -517,7 +517,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Travelling Expenses on " + currentDate, buffer.toString());
+                showMessage("All Travelling Expenses", buffer.toString());
             }
         });
 
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Cloth Expenses on " + currentDate, buffer.toString());
+                showMessage("All Cloth Expenses", buffer.toString());
             }
         });
         llshowsports = findViewById(R.id.llshowsport);
@@ -568,7 +568,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show all data
 
-                showMessage("Sport Expenses on " + currentDate, buffer.toString());
+                showMessage("All Sports Expenses", buffer.toString());
             }
         });
 
@@ -593,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("Name :" + res.getString(1) + "\n\n");
                 }
 
-                showMessage("Income on " + currentDate, buffer.toString());
+                showMessage("All Income Expenses", buffer.toString());
             }
         });
 

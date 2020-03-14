@@ -19,6 +19,7 @@
         android:title="Create Pdf" />
     <item
         android:id="@+id/viewpdf"
-        android:title="View Pdf" />
+        android:title="View Pdf" >
+    </item>
 </menu>
 

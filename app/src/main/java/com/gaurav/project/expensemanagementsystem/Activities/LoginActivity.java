@@ -1,22 +1,12 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
+
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.Toast;
-
 import com.gaurav.project.expensemanagementsystem.R;
-
 
 public class LoginActivity extends AppCompatActivity {
 
