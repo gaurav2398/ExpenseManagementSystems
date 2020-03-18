@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -15,6 +16,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -25,6 +40,8 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +56,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static final String GOOGLE_ACCOUNT = "google_account";
+    String profileName="", profileEmail="";
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     private LinearLayout linearLayoutCardsRoot;
@@ -76,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper mydb;
     String home, entertainment, travelling, cloth, sport, income;
 
+    GoogleApiClient mGoogleApiClient;
+
+    private InterstitialAd mInterstitialAd;
+
+
     int flag = 0;
 
 
@@ -94,17 +119,75 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(parseColor("#3f8342"));
         }
 
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        MobileAds.initialize(this, "ca-app-pub-4250344724353850~6274430743");
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-4250344724353850/1387907902");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });
+
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");       //test add
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        AdView adView1 = new AdView(this);              //real add
+        adView1.setAdSize(AdSize.BANNER);
+        adView1.setAdUnitId("ca-app-pub-4250344724353850/8469349248");
+        AdView mAdView1 = findViewById(R.id.adView1);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
+
         mydb = new DatabaseHelper(this);
 
         requestPermission();
 
         if (flag == 0) {
+            GoogleSignInAccount googleSignInAccount = getIntent().getParcelableExtra(GOOGLE_ACCOUNT);
+            if(googleSignInAccount != null) {
+                profileName = (googleSignInAccount.getDisplayName());
+                profileEmail = (googleSignInAccount.getEmail());
+            }
             getAllData();
 /*
             mydb.inertData1();
 */
             flag = 1;
         }
+
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (profileName.length()>1) {
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("Name", profileName);
+            editor.putString("Email", profileEmail);
+            editor.apply();
+        }
+
+        String n = null,e= null;
+        String name = preferences.getString("Name", "");
+        String email = preferences.getString("Email", "");
+        if(!name.equalsIgnoreCase(""))
+        {
+            n = name;
+            e = email;
+        }
+
+
         txtdatee = findViewById(R.id.txtdatee);
         txtdatee.setText("All");
 
@@ -115,8 +198,45 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent i = new Intent(MainActivity.this, HomeExpense.class);
-                i.putExtra("house", "house");
                 startActivity(i);
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
 
@@ -126,6 +246,43 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, EntertainmentActivity.class);
                 startActivity(i);
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
         txttravelling = findViewById(R.id.txttravelling);
@@ -134,6 +291,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, TravellingActivity.class);
                 startActivity(i);
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
         txtsports = findViewById(R.id.txtsports);
@@ -142,6 +337,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, SportActivity.class);
                 startActivity(i);
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
         txtcloths = findViewById(R.id.txtcloths);
@@ -150,6 +383,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ClothsActivity.class);
                 startActivity(i);
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
         rlincome = findViewById(R.id.rlincome);
@@ -158,6 +429,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, NewIncomeAcitivty.class);
                 startActivity(i);
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        // Code to be executed when an ad finishes loading.
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Code to be executed when an ad request fails.
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        // Code to be executed when the ad is displayed.
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        // Code to be executed when the user clicks on an ad.
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        // Code to be executed when the user has left the app.
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        // Code to be executed when the interstitial ad is closed.
+                    }
+                });
+
             }
         });
 
@@ -201,6 +510,14 @@ public class MainActivity extends AppCompatActivity {
         NavigationView nav_view = findViewById(R.id.nav_view);
         Drawer = findViewById(R.id.drawer_layout);        // Drawer object Assigned to the view
 
+
+
+        View headerView = nav_view.getHeaderView(0);
+        TextView name1 = headerView.findViewById(R.id.profile_text);
+        TextView email1 = headerView.findViewById(R.id.profile_email);
+
+        name1.setText(n);
+        email1.setText(e);
 
         toggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
@@ -266,6 +583,19 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.year:
                         getYearData();
+                        break;
+                    case R.id.signout:
+                        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                                new ResultCallback<Status>() {
+                                    @Override
+                                    public void onResult(Status status) {
+
+                                        Toast.makeText(getApplicationContext(),"Logged Out Successfully",Toast.LENGTH_SHORT).show();
+                                        Intent i=new Intent(getApplicationContext(),LoginActivity.class);
+                                        startActivity(i);
+                                    }
+                                });
+
                         break;
                 }
                 return true;
@@ -1618,5 +1948,15 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]
                 {READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
     }
-
+    @Override
+    protected void onStart() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
 }

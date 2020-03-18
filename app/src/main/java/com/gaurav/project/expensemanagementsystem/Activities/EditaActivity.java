@@ -19,6 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,6 +48,27 @@ public class EditaActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#3f8342"));
         }
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        AdView adView = new AdView(this);                   //test add
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        AdView mAdView = findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
+        AdView adView1 = new AdView(this);                      //real add
+        adView1.setAdSize(AdSize.BANNER);
+        adView1.setAdUnitId("ca-app-pub-4250344724353850/9635091257");
+        AdView mAdView1 = findViewById(R.id.adView);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
+
 
         mydb = new DatabaseHelper(this);
 
@@ -174,7 +202,7 @@ public class EditaActivity extends AppCompatActivity {
                 {
                     Toast.makeText(EditaActivity.this, "Enter Amount", Toast.LENGTH_SHORT).show();
                 }
-                else if (edtincome.getText().toString().equals("0")||edtincome.getText().toString().equals("00")||edtincome.getText().toString().equals("000")||edtincome.getText().toString().equals("0000")||edtincome.getText().toString().equals("00000")||edtincome.getText().toString().equals("000000")||edtincome.getText().toString().equals("0000000")||edtincome.getText().toString().equals("00000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("0000000000"))
+                else if (Integer.parseInt(edtincome.getText().toString())<1)
                 {
                     Toast.makeText(EditaActivity.this, "Amount should be greater than 0", Toast.LENGTH_SHORT).show();
                     edtincome.requestFocus();
@@ -182,7 +210,7 @@ public class EditaActivity extends AppCompatActivity {
 
                 else {
 
-                if (isUpdate == true)
+                if (isUpdate)
                 {
                     Toast.makeText(EditaActivity.this, "Data updated", Toast.LENGTH_SHORT).show();
 
