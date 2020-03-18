@@ -40,6 +40,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -101,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
 
 
-    int flag = 0;
+    int flag = 0,flag1=0;
 
 
     public static final int REQUEST_CODE_PERMISSIONS = 2;
     private boolean isBackup = true;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(parseColor("#3f8342"));
         }
+
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -589,6 +592,8 @@ public class MainActivity extends AppCompatActivity {
                                 new ResultCallback<Status>() {
                                     @Override
                                     public void onResult(Status status) {
+
+                                        flag1=1;
 
                                         Toast.makeText(getApplicationContext(),"Logged Out Successfully",Toast.LENGTH_SHORT).show();
                                         Intent i=new Intent(getApplicationContext(),LoginActivity.class);
@@ -1950,6 +1955,19 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     protected void onStart() {
+
+        if (flag1>0) {
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                    new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(i);
+                        }
+                    });
+        }
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
