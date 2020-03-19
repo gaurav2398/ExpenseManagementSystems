@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
         }
 
-        String n = null,e= null,u= null;
+        String n = null,e= null;
         String name = preferences.getString("Name", "");
         String email = preferences.getString("Email", "");
         if(!name.equalsIgnoreCase(""))
