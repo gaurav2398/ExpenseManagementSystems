@@ -2,6 +2,7 @@ package com.gaurav.project.expensemanagementsystem.Activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -51,12 +53,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -67,11 +71,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission_group.CAMERA;
 import static android.graphics.Color.parseColor;
+import static java.util.Objects.requireNonNull;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -97,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper mydb;
     String home, entertainment, travelling, cloth, sport, income;
 
+    String profileURL;
     GoogleApiClient mGoogleApiClient;
 
     private InterstitialAd mInterstitialAd;
@@ -158,12 +165,15 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
+        GoogleSignInAccount googleSignInAccount = getIntent().getParcelableExtra(GOOGLE_ACCOUNT);
+
         if (flag == 0) {
-            GoogleSignInAccount googleSignInAccount = getIntent().getParcelableExtra(GOOGLE_ACCOUNT);
             if(googleSignInAccount != null) {
+
                 profileName = (googleSignInAccount.getDisplayName());
                 profileEmail = (googleSignInAccount.getEmail());
             }
+
             getAllData();
 /*
             mydb.inertData1();
@@ -178,16 +188,18 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("Name", profileName);
             editor.putString("Email", profileEmail);
+
             editor.apply();
         }
 
-        String n = null,e= null;
+        String n = null,e= null,u= null;
         String name = preferences.getString("Name", "");
         String email = preferences.getString("Email", "");
         if(!name.equalsIgnoreCase(""))
         {
             n = name;
             e = email;
+
         }
 
 
@@ -522,6 +534,7 @@ public class MainActivity extends AppCompatActivity {
         name1.setText(n);
         email1.setText(e);
 
+
         toggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
             @Override
@@ -587,6 +600,18 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.year:
                         getYearData();
                         break;
+                    case R.id.feedback:
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(Uri.parse(String.format("mailto:%s?subject=%s", getString(R.string.email), getString(R.string.app_name))));
+
+                        try {
+                            startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(MainActivity.this, R.string.no_email, Toast.LENGTH_SHORT).show();
+                        }
+
+
+                break;
                     case R.id.signout:
                         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                                 new ResultCallback<Status>() {
