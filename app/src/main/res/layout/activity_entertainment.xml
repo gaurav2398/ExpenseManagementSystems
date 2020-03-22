@@ -16,7 +16,6 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp">
 
-
         <ImageView
             android:id="@+id/back"
             android:layout_width="24dp"

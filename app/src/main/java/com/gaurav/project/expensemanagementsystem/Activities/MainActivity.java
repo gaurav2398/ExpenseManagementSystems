@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -60,7 +59,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
-import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -523,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
         animateCards();
 
         NavigationView nav_view = findViewById(R.id.nav_view);
-        Drawer = findViewById(R.id.drawer_layout);        // Drawer object Assigned to the view
+        Drawer = findViewById(R.id.drawer_layout);
 
 
 
@@ -560,11 +558,11 @@ public class MainActivity extends AppCompatActivity {
         Date monthLastDay = calendar.getTime();
 
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        final Date currentyear = calendar.getTime();                                    //getting current year
+        final Date currentyear = calendar.getTime();
 
 
         SimpleDateFormat df = new SimpleDateFormat("MMMM");
-        final String startDateStr = df.format(monthFirstDay);                           //getting start date and end date of year
+        final String startDateStr = df.format(monthFirstDay);
         final String endDateStr = df.format(monthLastDay);
 
 
