@@ -21,7 +21,6 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp">
 
-
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"

@@ -59,6 +59,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
+import com.itextpdf.text.DocumentException;
 
 import org.w3c.dom.Text;
 
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     private LinearLayout linearLayoutCardsRoot;
+    private ForCreatingBackup localBackup;
 
     ActionBarDrawerToggle toggle;
     DrawerLayout Drawer;
@@ -158,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
         AdView mAdView1 = findViewById(R.id.adView1);
         AdRequest adRequest1 = new AdRequest.Builder().build();
         mAdView1.loadAd(adRequest1);
+
+
+        localBackup = new ForCreatingBackup(this);
 
         mydb = new DatabaseHelper(this);
 
@@ -611,18 +616,50 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
                     case R.id.signout:
-                        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                                new ResultCallback<Status>() {
+
+                        deleteDatabase(DatabaseHelper.DATABASE_NAME);
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                        alertDialogBuilder.setTitle("Alert\n");
+                        alertDialogBuilder.setMessage("After Logout All data will get delete ?");
+                        alertDialogBuilder.setPositiveButton("Confirm",
+                                new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onResult(Status status) {
+                                    public void onClick(DialogInterface arg0, int arg1) {
 
-                                        flag1=1;
+                                        String myPath = DatabaseHelper.DATABASE_NAME;
+                                        SQLiteDatabase.deleteDatabase(new File(myPath));
+/*
+                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                        startActivity(intent);
+*/
+                                     //   Toast.makeText(getApplicationContext(), "Data Delete Successfully", Toast.LENGTH_LONG).show();
 
-                                        Toast.makeText(getApplicationContext(),"Logged Out Successfully",Toast.LENGTH_SHORT).show();
-                                        Intent i=new Intent(getApplicationContext(),LoginActivity.class);
-                                        startActivity(i);
+
+                                        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                                                new ResultCallback<Status>() {
+                                                    @Override
+                                                    public void onResult(Status status) {
+
+                                                        flag1=1;
+
+                                                        Toast.makeText(getApplicationContext(),"Logged Out Successfully",Toast.LENGTH_SHORT).show();
+                                                        Intent i=new Intent(getApplicationContext(),LoginActivity.class);
+                                                        startActivity(i);
+                                                    }
+                                                });
                                     }
                                 });
+
+                        alertDialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+
 
                         break;
                 }
@@ -699,33 +736,69 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.backup:
-                Toast.makeText(getApplicationContext(), "Data BackUp Successfully ", Toast.LENGTH_LONG).show();
+                String outFileName = Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name) + File.separator;
+                localBackup.performBackup(mydb, outFileName);
 
                 return true;
 
             case R.id.restore:
-                Toast.makeText(getApplicationContext(), "Data Restore Successfully ", Toast.LENGTH_LONG).show();
+
+                localBackup.performRestore(mydb);
+
+                getAllData();
                 return true;
 
 
             case R.id.delete:
-                Toast.makeText(getApplicationContext(), "Data Deleted Successfully ", Toast.LENGTH_LONG).show();
+                this.deleteDatabase(DatabaseHelper.DATABASE_NAME);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Alert\n");
+                alertDialogBuilder.setMessage("Are you sure you want to delete data?");
+                alertDialogBuilder.setPositiveButton("Confirm",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+
+                                String myPath = DatabaseHelper.DATABASE_NAME;
+                                SQLiteDatabase.deleteDatabase(new File(myPath));
+                                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                Toast.makeText(getApplicationContext(), "Data Delete Successfully", Toast.LENGTH_LONG).show();
+
+                            }
+                        });
+
+                alertDialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
                 return true;
             case R.id.pdf:
 
-
+                try {
+                    mydb.createPdf();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
                 Toast.makeText(getApplicationContext(), "PDF Successfully Created", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.viewpdf:
-                Toast.makeText(getApplicationContext(), "View Pdf", Toast.LENGTH_LONG).show();
 
+                openPdf(getApplication(),Environment.getExternalStorageDirectory() + File.separator + "Expenses Pdf/Expense.pdf");
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     public void getAllData() {
         txtdate = findViewById(R.id.txtdate);
@@ -2000,4 +2073,33 @@ public class MainActivity extends AppCompatActivity {
         mGoogleApiClient.connect();
         super.onStart();
     }
+    public void openPdf(Context context, String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+
+            PackageManager pm = context.getPackageManager();
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setType("application/pdf");
+            Intent openInChooser = Intent.createChooser(intent, "Choose");
+            List<ResolveInfo> resInfo = pm.queryIntentActivities(sendIntent, 0);
+            if (resInfo.size() > 0) {
+                try {
+                    context.startActivity(openInChooser);
+                } catch (Throwable throwable) {
+                    Toast.makeText(MainActivity.this, "PDF apps are not installed \nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
+
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "PDF apps are not installed\nOpen Manualy From \n Storage/Expenses Pdf/Expense.pdf", Toast.LENGTH_LONG).show();
+            }
+
+        }
+        else {
+            Toast.makeText(MainActivity.this, "PDF file not exists\nPlease create PDF file", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
 }
