@@ -147,12 +147,14 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+/*
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");       //test add
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+*/
 
         AdView adView1 = new AdView(this);              //real add
         adView1.setAdSize(AdSize.BANNER);

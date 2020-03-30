@@ -160,6 +160,7 @@
             ads:adUnitId="ca-app-pub-4250344724353850/9635091257">
         </com.google.android.gms.ads.AdView>
 
+<!--
         <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView2"
@@ -170,6 +171,7 @@
             ads:adSize="BANNER"
             ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
         </com.google.android.gms.ads.AdView>
+-->
 
     </LinearLayout>
 </RelativeLayout>

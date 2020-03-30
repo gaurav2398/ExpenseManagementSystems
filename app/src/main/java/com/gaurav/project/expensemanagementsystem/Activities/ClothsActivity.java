@@ -54,6 +54,7 @@ public class ClothsActivity extends AppCompatActivity {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
+/*
 
         AdView adView = new AdView(this);                   //test add
         adView.setAdSize(AdSize.BANNER);
@@ -62,6 +63,7 @@ public class ClothsActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+*/
 
         AdView adView1 = new AdView(this);                      //real add
         adView1.setAdSize(AdSize.BANNER);
@@ -131,7 +133,7 @@ public class ClothsActivity extends AppCompatActivity {
                     Toast.makeText(ClothsActivity.this, "Enter Valid Amount", Toast.LENGTH_SHORT).show();
                     edtincome.requestFocus();
                 }
-                else if (Integer.parseInt(edtincome.getText().toString())<1)
+                else if (edtincome.getText().toString().equals("0")||edtincome.getText().toString().equals("00")||edtincome.getText().toString().equals("000")||edtincome.getText().toString().equals("0000")||edtincome.getText().toString().equals("00000")||edtincome.getText().toString().equals("000000")||edtincome.getText().toString().equals("0000000")||edtincome.getText().toString().equals("00000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("000000000")||edtincome.getText().toString().equals("0000000000"))
                 {
                     Toast.makeText(ClothsActivity.this, "Amount should be greater than 0", Toast.LENGTH_SHORT).show();
                     edtincome.requestFocus();
