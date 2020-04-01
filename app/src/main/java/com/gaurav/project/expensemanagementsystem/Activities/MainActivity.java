@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 200;
     private LinearLayout linearLayoutCardsRoot;
     private ForCreatingBackup localBackup;
-
     ActionBarDrawerToggle toggle;
     DrawerLayout Drawer;
     androidx.appcompat.widget.Toolbar toolbar;
@@ -101,20 +100,11 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout llshowhome, llshowentertainment, llshowtravelling, llshowcloth, llshowsports, llshowincome;
     DatabaseHelper mydb;
     String home, entertainment, travelling, cloth, sport, income;
-
-
     GoogleApiClient mGoogleApiClient;
-
     private InterstitialAd mInterstitialAd;
     int flag = 0,flag1=0;
-
     private Context mContext;
-
-    private EditText hours;
-    private EditText minutes;
-
     public static final int REQUEST_CODE_PERMISSIONS = 2;
-    private boolean isBackup = true;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -128,13 +118,11 @@ public class MainActivity extends AppCompatActivity {
         NotificationHelper.scheduleRepeatingRTCNotification(mContext,"0", "1");
         NotificationHelper.enableBootReceiver(mContext);
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(parseColor("#3f8342"));
         }
-
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
