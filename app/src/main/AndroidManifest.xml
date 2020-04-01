@@ -4,10 +4,9 @@
     package="com.gaurav.project.expensemanagementsystem"
     android:installLocation="preferExternal">
 
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
 
     <application
         android:allowBackup="true"
@@ -18,16 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-
         android:usesCleartextTraffic="true"
         tools:replace="android:appComponentFactory">
+        <activity android:name=".Activities.DeleteActivity"></activity>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4250344724353850~6274430743" />
 
         <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Activities.EditaActivity" />
         <activity
             android:name=".Activities.SportActivity"
             android:windowSoftInputMode="stateVisible" />
@@ -54,7 +52,16 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".Activities.notification.AlarmReceiver"/>
+        <receiver android:name=".Activities.notification.AlarmBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
         <meta-data
+
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>

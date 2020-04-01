@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/gradient"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/layout1"
@@ -42,29 +42,16 @@
     <LinearLayout
         android:id="@+id/layout2"
         android:layout_below="@id/layout1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="3dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtdate"
-            android:layout_width="wrap_content"
-            android:drawableLeft="@drawable/ic_calendar"
-            android:drawablePadding="10dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="15dp"
-            android:fontFamily="@font/sfsemibold"
-            android:gravity="center"
-            android:text="feb 23, 2020"
-            android:textColor="#fff"
-            android:textSize="16sp" />
         <androidx.cardview.widget.CardView
             android:id="@+id/moving_cards_activity_card5_cardview"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
             android:layout_marginStart="10dp"
@@ -75,8 +62,8 @@
             android:elevation="4dp">
             <RelativeLayout
                 android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_marginLeft="15dp"
@@ -89,7 +76,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sfpro"
-                        android:text="Enter Id"
+                        android:text="Name "
                         android:textColor="#404a57"
                         android:layout_marginTop="10dp"
                         android:textSize="13sp" />
@@ -97,17 +84,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <EditText
+                            android:id="@+id/name"
+                            android:clickable="false"
+                            android:editable="false"
+                            android:keyboardNavigationCluster="false"
                             android:layout_weight="1"
-                            android:id="@+id/edtid"
                             android:singleLine="true"
-                            android:drawableLeft="@drawable/ic_dollar"
                             android:drawablePadding="10dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number|none"
-                            android:hint="Only to update/delete data"
-                            android:focusedByDefault="true"
-                            android:focusable="true"
+                            android:hint="Name"
                             android:textSize="20dp">
                         </EditText>
                     </LinearLayout>
@@ -115,7 +101,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sfpro"
-                        android:text="Enter Amount"
+                        android:text="Amount"
                         android:textColor="#404a57"
                         android:layout_marginTop="10dp"
                         android:textSize="13sp" />
@@ -124,9 +110,8 @@
                         android:layout_height="wrap_content">
                         <EditText
                             android:layout_weight="1"
-                            android:id="@+id/edtincome"
+                            android:id="@+id/amount"
                             android:singleLine="true"
-                            android:drawableLeft="@drawable/ic_dollar"
                             android:drawablePadding="10dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -142,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sfpro"
-                        android:text="Category"
+                        android:text="Date"
                         android:textColor="#404a57"
                         android:layout_marginTop="10dp"
                         android:textSize="13sp" />
@@ -151,16 +136,15 @@
                         android:layout_height="wrap_content">
                         <EditText
 
-                            android:id="@+id/edtname"
-                            android:clickable="false"
-                            android:editable="false"
+                            android:id="@+id/date"
                             android:layout_weight="1"
+                            android:editable="false"
+                            android:focusable="false"
                             android:singleLine="true"
-                            android:drawableLeft="@drawable/ic_dollar"
                             android:drawablePadding="10dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                                android:hint="category"
+                            android:hint="date"
                             android:textSize="20dp">
                         </EditText>
                     </LinearLayout>
@@ -175,39 +159,18 @@
 
                         <Button
                             android:layout_weight="1"
-                            android:id="@+id/update"
+                            android:id="@+id/save"
                             android:paddingLeft="15dp"
                             android:paddingRight="15dp"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:drawablePadding="10dp"
-                            android:drawableLeft="@drawable/ic_living"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
                             android:background="@drawable/border_home"
                             android:clickable="true"
                             android:fontFamily="@font/sfpro"
-                            android:text="Update Data"
-                            android:textAllCaps="false"
-                            android:textColor="#4CAF50"
-                            android:textSize="13sp" />
-                        <Button
-                            android:layout_weight="1"
-                            android:id="@+id/delete"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:drawablePadding="10dp"
-                            android:drawableLeft="@drawable/ic_living"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@drawable/border_home"
-                            android:clickable="true"
-                            android:fontFamily="@font/sfpro"
-                            android:text="Delete Data"
-
+                            android:text="Save Data"
                             android:textAllCaps="false"
                             android:textColor="#4CAF50"
                             android:textSize="13sp" />
@@ -218,26 +181,7 @@
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-4250344724353850/9635091257">
-        </com.google.android.gms.ads.AdView>
-        <!--<com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-        </com.google.android.gms.ads.AdView>
-    --></LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

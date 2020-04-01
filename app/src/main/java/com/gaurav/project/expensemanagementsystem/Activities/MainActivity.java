@@ -1,8 +1,12 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
+import com.gaurav.project.expensemanagementsystem.Activities.notification.NotificationHelper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -33,7 +38,8 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.material.navigation.NavigationView;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -41,8 +47,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Handler;
-import android.preference.PreferenceActivity;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -52,7 +57,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,8 +66,6 @@ import android.widget.Toast;
 import com.gaurav.project.expensemanagementsystem.R;
 import com.itextpdf.text.DocumentException;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -70,16 +73,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission_group.CAMERA;
 import static android.graphics.Color.parseColor;
 import static java.util.Objects.requireNonNull;
 
 public class MainActivity extends AppCompatActivity {
-
 
     public static final String GOOGLE_ACCOUNT = "google_account";
     String profileName="", profileEmail="";
@@ -103,23 +102,31 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper mydb;
     String home, entertainment, travelling, cloth, sport, income;
 
-    String profileURL;
+
     GoogleApiClient mGoogleApiClient;
 
     private InterstitialAd mInterstitialAd;
-
-
     int flag = 0,flag1=0;
 
+    private Context mContext;
+
+    private EditText hours;
+    private EditText minutes;
 
     public static final int REQUEST_CODE_PERMISSIONS = 2;
     private boolean isBackup = true;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
+
+        mContext = getApplicationContext();
+
+        NotificationHelper.scheduleRepeatingRTCNotification(mContext,"0", "1");
+        NotificationHelper.enableBootReceiver(mContext);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -147,14 +154,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-/*
-        AdView adView = new AdView(this);
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");       //test add
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-*/
 
         AdView adView1 = new AdView(this);              //real add
         adView1.setAdSize(AdSize.BANNER);
@@ -172,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
         GoogleSignInAccount googleSignInAccount = getIntent().getParcelableExtra(GOOGLE_ACCOUNT);
 
+        getAllData();
+
         if (flag == 0) {
             if(googleSignInAccount != null) {
 
@@ -180,9 +181,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             getAllData();
-/*
-            mydb.inertData1();
-*/
+
             flag = 1;
         }
 
@@ -248,12 +247,12 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onAdLeftApplication() {
-                        // Code to be executed when the user has left the app.
+
                     }
 
                     @Override
                     public void onAdClosed() {
-                        // Code to be executed when the interstitial ad is closed.
+
                     }
                 });
 
@@ -264,6 +263,11 @@ public class MainActivity extends AppCompatActivity {
         txtentertainment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mContext = getApplicationContext();
+
+                NotificationHelper.scheduleRepeatingRTCNotification(mContext,"0", "1");
+                NotificationHelper.enableBootReceiver(mContext);
+
                 Intent i = new Intent(MainActivity.this, EntertainmentActivity.class);
                 startActivity(i);
                 if (mInterstitialAd.isLoaded()) {
@@ -565,12 +569,6 @@ public class MainActivity extends AppCompatActivity {
         Date monthLastDay = calendar.getTime();
 
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        final Date currentyear = calendar.getTime();
-
-
-        SimpleDateFormat df = new SimpleDateFormat("MMMM");
-        final String startDateStr = df.format(monthFirstDay);
-        final String endDateStr = df.format(monthLastDay);
 
 
         while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
@@ -630,12 +628,6 @@ public class MainActivity extends AppCompatActivity {
 
                                         String myPath = DatabaseHelper.DATABASE_NAME;
                                         SQLiteDatabase.deleteDatabase(new File(myPath));
-/*
-                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                                        startActivity(intent);
-*/
-                                     //   Toast.makeText(getApplicationContext(), "Data Delete Successfully", Toast.LENGTH_LONG).show();
-
 
                                         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                                                 new ResultCallback<Status>() {
@@ -811,7 +803,7 @@ public class MainActivity extends AppCompatActivity {
         tvedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
+                Intent intent = new Intent(MainActivity.this, DeleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -1046,7 +1038,7 @@ public class MainActivity extends AppCompatActivity {
         tvedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
+                Intent intent = new Intent(MainActivity.this, DeleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -1281,7 +1273,7 @@ public class MainActivity extends AppCompatActivity {
         tvedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
+                Intent intent = new Intent(MainActivity.this, DeleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -1499,7 +1491,7 @@ public class MainActivity extends AppCompatActivity {
         tvedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
+                Intent intent = new Intent(MainActivity.this, DeleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -1833,7 +1825,7 @@ public class MainActivity extends AppCompatActivity {
         tvedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditaActivity.class);
+                Intent intent = new Intent(MainActivity.this, DeleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -2054,6 +2046,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
 
+        getAllData();
+
         if (flag1>0) {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {
@@ -2103,5 +2097,4 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 }

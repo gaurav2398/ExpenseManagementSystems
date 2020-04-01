@@ -414,18 +414,7 @@
                                         android:text="Entertainment"
                                         android:textColor="#615f5f"
                                         android:textSize="13sp" />
-                                    <!--                                 <TextView
-                                                                         android:layout_width="22dp"
-                                                                         android:layout_height="22dp"
-                                                                         android:gravity="center"
-                                                                         android:elevation="4dp"
-                                                                         android:textSize="12dp"
-                                                                         android:layout_marginLeft="5dp"
-                                                                         android:textColor="#fff"
-                                                                         android:layout_marginTop="5dp"
-                                                                         android:background="@drawable/border02red"
-                                                                         android:text="02"/>
-                                 -->
+
                                 </RelativeLayout>
 
                                 <View
@@ -457,19 +446,7 @@
                                         android:textColor="#615f5f"
                                         android:textSize="13sp" />
 
-                                    <!--                                 <TextView
-                                                                         android:layout_width="22dp"
-                                                                         android:layout_height="22dp"
-                                                                         android:gravity="center"
-                                                                         android:textSize="12dp"
-                                                                         android:elevation="4dp"
-                                                                         android:layout_marginLeft="5dp"
-                                                                         android:textColor="#fff"
-                                                                         android:layout_marginTop="5dp"
-                                                                         android:background="@drawable/border02yellow"
-                                                                         android:text="02"/>
-                                    -->
-                                </RelativeLayout>
+     </RelativeLayout>
                             </LinearLayout>
 
                             <View
@@ -1036,20 +1013,7 @@
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-<!--
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="5dp"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-        </com.google.android.gms.ads.AdView>
--->
+
         <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView1"

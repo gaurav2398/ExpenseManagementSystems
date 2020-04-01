@@ -50,19 +50,39 @@
         android:paddingBottom="5dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtdate"
+        <LinearLayout
+            android:id="@+id/datechange"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
             android:layout_width="wrap_content"
-            android:drawableLeft="@drawable/ic_calendar"
-            android:drawablePadding="10dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
-            android:fontFamily="@font/sfsemibold"
             android:gravity="center"
-            android:text="feb 23, 2020"
-            android:textColor="#fff"
-            android:textSize="16sp" />
+            android:padding="2dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtdate"
+                android:layout_width="wrap_content"
+                android:drawableLeft="@drawable/ic_calendar"
+                android:drawablePadding="10dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sfsemibold"
+                android:text="feb 23, 2020"
+                android:textColor="#fff"
+                android:textSize="16sp" />
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sfsemibold"
+                android:text="(Change Date)"
+                android:textColor="#673AB7"
+                android:textSize="13sp" />
+
+        </LinearLayout>
         <androidx.cardview.widget.CardView
             android:id="@+id/moving_cards_activity_card5_cardview"
             android:layout_width="match_parent"
@@ -160,20 +180,7 @@
             ads:adUnitId="ca-app-pub-4250344724353850/9635091257">
         </com.google.android.gms.ads.AdView>
 
-<!--
-        <com.google.android.gms.ads.AdView
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="5dp"
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-        </com.google.android.gms.ads.AdView>
--->
+
     </LinearLayout>
 
 

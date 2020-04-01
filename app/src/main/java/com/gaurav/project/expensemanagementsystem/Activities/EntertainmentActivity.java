@@ -1,5 +1,6 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -12,8 +13,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,15 +29,18 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class EntertainmentActivity extends AppCompatActivity {
 
+    LinearLayout datechage;
+    private int mYear, mMonth, mDay;
 
     TextView txtdate;
-    EditText edtincome,edtid;
+    EditText edtincome;
     ImageView back;
-    Button submit,update,delete;
+    Button submit;
     DatabaseHelper mydb;
 
     @Override
@@ -77,6 +83,87 @@ public class EntertainmentActivity extends AppCompatActivity {
 
         txtdate = findViewById(R.id.txtdate);
         txtdate.setText(currentDate);
+        datechage = findViewById(R.id.datechange);
+
+
+        datechage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(EntertainmentActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+
+                                c.set(Calendar.YEAR, year);
+                                c.set(Calendar.MONTH, monthOfYear);
+                                c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                                String monthName = "";
+                                switch (monthOfYear) {
+                                    case 0:
+                                        monthName = "January";
+                                        break;
+                                    case 1:
+                                        monthName = "February";
+                                        break;
+                                    case 2:
+                                        monthName = "March";
+                                        break;
+                                    case 3:
+                                        monthName = "April";
+                                        break;
+                                    case 4:
+                                        monthName = "May";
+                                        break;
+                                    case 5:
+                                        monthName = "June";
+                                        break;
+                                    case 6:
+                                        monthName = "July";
+                                        break;
+                                    case 7:
+                                        monthName = "August";
+                                        break;
+                                    case 8:
+                                        monthName = "September";
+                                        break;
+                                    case 9:
+                                        monthName = "October";
+                                        break;
+                                    case 10:
+                                        monthName = "November";
+                                        break;
+                                    case 11:
+                                        monthName = "December";
+                                        break;
+                                    default:
+                                        monthName = "Invalid month";
+                                        break;
+
+                                }
+                                String dof = null;
+                                if (dayOfMonth < 10) {
+                                    dof= "0" + dayOfMonth;
+                                }
+                                else
+                                {
+                                    dof = String.valueOf(dayOfMonth);
+                                }
+
+                                txtdate.setText(dof + "-" + (monthName) + "-" + year);
+                            }
+                        }, mYear, mMonth, mDay);
+
+                datePickerDialog.show();
+            }
+        });
 
         edtincome = findViewById(R.id.edtincome);
         edtincome.requestFocus();
@@ -106,7 +193,6 @@ public class EntertainmentActivity extends AppCompatActivity {
 
             }
         });
-        edtid = findViewById(R.id.edtid);
 
         back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +221,7 @@ public class EntertainmentActivity extends AppCompatActivity {
 
                 else
                 {
-                    boolean isInserted = mydb.inertData("ENTERTAINMENT",edtincome.getText().toString(),currentDate);
+                    boolean isInserted = mydb.inertData("ENTERTAINMENT",edtincome.getText().toString(),txtdate.getText().toString());
 
                     if (isInserted)
                     {

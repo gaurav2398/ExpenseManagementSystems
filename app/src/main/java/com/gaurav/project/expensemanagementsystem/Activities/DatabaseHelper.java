@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.gaurav.project.expensemanagementsystem.Activities.Model.ExpenseModel;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -23,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -472,20 +475,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean updateData(String id, String name, String money){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_1,id);
-        contentValues.put(COL_2,name);
-        contentValues.put(COL_3,money);
-        db.update(TABLE_NAME,contentValues,"ID = ?", new String[] { id });
 
-        return true;
-    }
-    public Integer deleteData(String id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        return  db.delete(TABLE_NAME,"ID = ?",new String[] { id });
-    }
     public void backup(String outFileName) {
 
         final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
@@ -600,4 +590,146 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         document.addCreationDate();
         document.close();
     }
+    public List<ExpenseModel> homedeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='HOME' ORDER BY  date ";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+    public List<ExpenseModel> entertainmentdeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='ENTERTAINMENT' ORDER BY  date";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+    public List<ExpenseModel> travellingdeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='TRAVELLING' ORDER BY  date";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+
+    public List<ExpenseModel> clothdeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='CLOTH' ORDER BY  date";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+    public List<ExpenseModel> sportdeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='SPORT' ORDER BY  date";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+    public List<ExpenseModel> incomedeletedata() {
+        List<ExpenseModel> model = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='INCOME' ORDER BY  date";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ExpenseModel emodel = new ExpenseModel();
+                emodel.setId(cursor.getString(0));
+                emodel.setName(cursor.getString(1));
+                emodel.setAmount(cursor.getString(2));
+                emodel.setDate(cursor.getString(3));
+                model.add(emodel);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return model;
+    }
+    public void removePlace(ExpenseModel placeId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, COL_1 + "=\"" + placeId+"\"", null) ;
+    }
+
+    public Integer deleteDatas(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return  db.delete(TABLE_NAME,"ID = ?",new String[] { id });
+    }
+    public boolean updateDatas(String id, String name,String amount, String date){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1,id);
+        contentValues.put(COL_2,name);
+        contentValues.put(COL_3,amount);
+        contentValues.put(COL_4,date);
+        db.update(TABLE_NAME,contentValues,"ID = ?", new String[] { id });
+
+        return true;
+    }
+
 }
