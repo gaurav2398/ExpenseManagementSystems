@@ -592,7 +592,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public List<ExpenseModel> homedeletedata() {
         List<ExpenseModel> model = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='HOME' ORDER BY  date ";
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE name='HOME' ORDER BY  money ";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
