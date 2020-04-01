@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,11 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.project.expensemanagementsystem.R;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
@@ -38,11 +35,11 @@ import java.util.Date;
 public class HomeExpense extends AppCompatActivity {
 
     TextView txtdate;
-    EditText edtincome,edtid;
+    EditText edtincome;
     ImageView back;
-    Button submit,update,delete;
+    Button submit;
     LinearLayout datechage;
-    private int mYear, mMonth, mDay, mHour, mMinute;
+    private int mYear, mMonth, mDay;
 
     DatabaseHelper mydb;
 
@@ -63,16 +60,6 @@ public class HomeExpense extends AppCompatActivity {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
-
-/*
-
-        AdView adView = new AdView(this);                   //test add
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdView mAdView = findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-*/
 
 
         AdView adView1 = new AdView(this);                      //real add

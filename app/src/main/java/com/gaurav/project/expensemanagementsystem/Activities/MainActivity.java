@@ -1,12 +1,8 @@
 package com.gaurav.project.expensemanagementsystem.Activities;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,15 +35,12 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -57,7 +50,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -76,7 +68,6 @@ import java.util.Locale;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.graphics.Color.parseColor;
-import static java.util.Objects.requireNonNull;
 
 public class MainActivity extends AppCompatActivity {
 

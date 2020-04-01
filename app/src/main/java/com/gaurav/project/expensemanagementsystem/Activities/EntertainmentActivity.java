@@ -59,14 +59,7 @@ public class EntertainmentActivity extends AppCompatActivity {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
-        /*
-        AdView adView = new AdView(this);                   //test add
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdView mAdView = findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-*/
+
 
         AdView adView1 = new AdView(this);                      //real add
         adView1.setAdSize(AdSize.BANNER);
